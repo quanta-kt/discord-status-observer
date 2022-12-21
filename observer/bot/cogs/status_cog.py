@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import datetime
 
-from ..data import repository, models
+from ...data import repository, models
 
 
 class Status(commands.Cog):

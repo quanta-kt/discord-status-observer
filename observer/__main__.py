@@ -3,7 +3,7 @@ import motor.motor_asyncio
 from .bot import ObserverBot
 from .data.repository import StatusLogRepository
 from . import config
-from .bot import status_cog
+from .bot import cogs
 
 
 if __name__ == "__main__":
@@ -17,7 +17,7 @@ if __name__ == "__main__":
     bot = ObserverBot(
         guild_ids=config.GUILD_IDS,
         cogs = [
-            status_cog.Status(
+            cogs.Status(
                 repo=repo,
                 guild_ids=config.GUILD_IDS,
             ),
