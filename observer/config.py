@@ -5,5 +5,9 @@ import os
 dotenv.load_dotenv()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-MONGO_CONNECTION_STRING = os.getenv("MONGO_CONNECTION_STRING")    
-GUILD_IDS = { int(x) for x in os.getenv("GUILD_IDS").split(";") }
+
+DATABASE_URI = os.getenv("DATABASE_URI")
+# The database used for running tests
+TEST_DATABASE_URI = os.getenv("TEST_DATABASE_URI")
+
+GUILD_IDS = {int(x) for x in os.getenv("GUILD_IDS").split(";")}

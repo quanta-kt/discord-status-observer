@@ -3,12 +3,14 @@ from PIL import Image, ImageDraw
 
 Color = tuple[int, int, int]
 
+
 def _color(color_value: int) -> Color:
     return (
-        (color_value & 0xff0000) >> 16,
-        (color_value & 0x00ff00) >> 8,
-        (color_value & 0x0000ff) >> 0,
+        (color_value & 0xFF0000) >> 16,
+        (color_value & 0x00FF00) >> 8,
+        (color_value & 0x0000FF) >> 0,
     )
+
 
 GRAPH_IMAGE_WIDTH = 1000
 GRAPH_IMAGE_HEIGHT = 1000
@@ -33,7 +35,7 @@ def generate_pie_graph(values: list[tuple[float, Color]]) -> Image:
 
         draw.arc(
             (0, 0, *GRAPH_IMAGE_SIZE),
-            consumed, 
+            consumed,
             consumed + arc_angle,
             fill=color,
             width=GRAPH_ARCH_WIDTH,
@@ -43,11 +45,12 @@ def generate_pie_graph(values: list[tuple[float, Color]]) -> Image:
 
     return img
 
+
 def generate_status_pie_graph(
-    online: float,
-    idle: float,
-    dnd: float,
-    offline: float,
+    online: float = 0.0,
+    idle: float = 0.0,
+    dnd: float = 0.0,
+    offline: float = 0.0,
 ) -> Image:
 
     values = [

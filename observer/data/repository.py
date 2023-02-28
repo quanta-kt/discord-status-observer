@@ -1,77 +1,96 @@
 import asyncio
 import discord
-import motor.motor_asyncio
 import datetime
+import sqlalchemy as sa
+from sqlalchemy.ext.asyncio import AsyncEngine
 from io import BytesIO
 
-from .models import StatusUpdateEntry
+from .models import StatusLog
 from ..imggen import graph
 
 
 class StatusLogRepository:
+    def __init__(self, engine: AsyncEngine) -> None:
+        self._engine = engine
 
-    def __init__(
-        self,
-        motor_client: motor.motor_asyncio.AsyncIOMotorClient
+    async def log_status_change(
+        self, user_id, guild_id, before, after, timestamp
+    ) -> None:
+        async with self._engine.begin() as conn:
+            await conn.execute(
+                StatusLog.insert(),
+                {
+                    "user_id": user_id,
+                    "guild_id": guild_id,
+                    "before": before,
+                    "after": after,
+                    "time": timestamp,
+                },
+            )
+
+    async def log_initial_statuses(
+        self, members: list[discord.Member], guild_id: int
     ) -> None:
 
-        self._motor_client = motor_client
-        self._db = motor_client.observer
-        self._status_log_collection = self._db.status_log
+        now = datetime.datetime.now()
 
-    async def log_status_change(self, obj: StatusUpdateEntry) -> None:
-        await self._status_log_collection.insert_one(obj.to_document())
-
-    async def log_initial_statuses(self, members: list[discord.Member], guild_id: int) -> None:
-        timestamp = datetime.datetime.now()
-
-        docs = [
-            StatusUpdateEntry(
-                before=None,
-                after=member.status.name,
-                timestamp=timestamp,
-                user_id=member.id,
-                guild_id=guild_id
-            ).to_document()
-
+        entires = [
+            {
+                "user_id": member.id,
+                "guild_id": guild_id,
+                "before": None,
+                "after": member.status.name,
+                "time": now,
+            }
             for member in members
         ]
-            
-        await self._status_log_collection.insert_many(docs)
 
-    async def log_bot_shutdown(self) -> None:
-        pass
+        async with self._engine.begin() as conn:
+            await conn.execute(StatusLog.insert(), entires)
 
-    async def normalize(self) -> None:
-        pass
+    async def get_user_stats(self, user_id, guild_id):
 
-    async def get_user_stats(self, user_id, guild_id) -> list[StatusUpdateEntry]:
-        cursor = self._status_log_collection.find({
-            'user_id': { '$eq': user_id },
-            'guild_id': { '$eq': guild_id },
-        }).sort('timestamp')
-
-        return [
-            StatusUpdateEntry.from_document(x)
-            for x in await cursor.to_list()
-        ]
-
-    async def get_user_graph(
-        self,
-        user_id: int,
-        guild_id: int
-    ) -> BytesIO:
-        
-        # TODO: Fetch time periods instead of using random values
-
-        import random
-        values = [random.random() * 0.4 for _ in range(3)]
-        values.append(1 - sum(values))
-
-        image = await asyncio.to_thread(
-            graph.generate_status_pie_graph,
-            *values
+        subquery = (
+            sa.select(
+                StatusLog.c.before.label("status"),
+                StatusLog.c.time.label("end_time"),
+                sa.func.lag(StatusLog.c.time)
+                .over(order_by=StatusLog.c.time)
+                .label("start_time"),
+                (
+                    sa.func.lag(StatusLog.c.after).over(order_by=StatusLog.c.time)
+                    == StatusLog.c.before
+                ).label("is_valid"),
+            )
+            .select_from(StatusLog)
+            .where(StatusLog.c.user_id == user_id)
+            .where(StatusLog.c.guild_id == guild_id)
+            .subquery()
         )
+
+        query = (
+            sa.select(
+                subquery.c.status.label("status"),
+                sa.func.sum(subquery.c.end_time - subquery.c.start_time).label("time"),
+            )
+            .where(subquery.c.is_valid)
+            .group_by(subquery.c.status)
+        )
+
+        async with self._engine.connect() as conn:
+            result = await conn.execute(query)
+            return result.fetchall()
+
+    async def get_user_graph(self, user_id: int, guild_id: int) -> BytesIO:
+
+        stats = await self.get_user_stats(user_id=user_id, guild_id=guild_id)
+        total_time = sum(stat.time.total_seconds() for stat in stats)
+
+        values = {
+            stat.status.name: stat.time.total_seconds() / total_time for stat in stats
+        }
+
+        image = await asyncio.to_thread(graph.generate_status_pie_graph, **values)
 
         fp = BytesIO()
         fp.name = "graph.png"

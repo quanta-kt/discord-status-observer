@@ -1,18 +1,43 @@
-import dataclasses
-import datetime
+import enum
+import sqlalchemy as sa
 
 
-@dataclasses.dataclass
-class StatusUpdateEntry:
-    before: str
-    after: str
-    timestamp: datetime.datetime
-    user_id: int
-    guild_id: int
+metadata = sa.MetaData()
 
-    @staticmethod
-    def from_document(doc: dict) -> 'StatusUpdateEntry':
-        return StatusUpdateEntry(**doc)
 
-    def to_document(self) -> dict:
-        return dataclasses.asdict(self)
+class Status(enum.Enum):
+    online = 1
+    offline = 2
+    idle = 3
+    dnd = 4
+
+
+StatusLog = sa.Table(
+    "StatusLog",
+    metadata,
+    sa.Column(
+        "user_id",
+        sa.BigInteger(),
+        nullable=False,
+    ),
+    sa.Column(
+        "guild_id",
+        sa.BigInteger(),
+        nullable=False,
+    ),
+    sa.Column(
+        "before",
+        sa.Enum(Status),
+        nullable=True,
+    ),
+    sa.Column(
+        "after",
+        sa.Enum(Status),
+        nullable=False,
+    ),
+    sa.Column(
+        "time",
+        sa.DateTime(),
+        nullable=False,
+    ),
+)
