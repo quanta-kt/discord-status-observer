@@ -8,7 +8,6 @@ name = "pypi"
 python-dotenv = "*"
 pillow = "*"
 asyncpg = "*"
-aiosql = "*"
 sqlalchemy = {extras = ["asyncio"], version = "*"}
 alembic = "*"
 

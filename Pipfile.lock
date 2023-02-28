@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "52b0717462e55951e5b7822ef5e30551b1ce97f4bc0d6ba944b57fe4044d78c8"
+            "sha256": "efed857e06bf0e01cbe16cfd08c0cb08a0603945663cfd0e84ff05695dbc0c26"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -116,14 +116,6 @@
             ],
             "markers": "python_version >= '3.7'",
             "version": "==1.3.1"
-        },
-        "aiosql": {
-            "hashes": [
-                "sha256:dea11f35a41009fe58697623cbcef25478369c4869598cb8ff80051298711c04",
-                "sha256:edcd571aaacca99685d4944caeab2e2555d0ea086efe8c8f24c22e12fda1b447"
-            ],
-            "index": "pypi",
-            "version": "==7.2"
         },
         "alembic": {
             "hashes": [
@@ -286,11 +278,11 @@
         },
         "discord.py": {
             "hashes": [
-                "sha256:8258b7af641c532e9e33e186c7b867d9ff5575fe63a460b17ed55bd4fe082200",
-                "sha256:b99fbf4ad74f007c680f33f5174738858146c99a2bc4f6d0e08ddbf93bc12c4d"
+                "sha256:012e98571af6847467e81f9501bbe4c6ebfe292c842f5ef8e951908839ee1cd0",
+                "sha256:a92d69ab6f982998693d0c371ea19235fa0f9900b50068fc461086d02c33e6bb"
             ],
             "index": "pypi",
-            "version": "==2.1.1"
+            "version": "==2.2.0"
         },
         "frozenlist": {
             "hashes": [
@@ -680,14 +672,6 @@
             ],
             "index": "pypi",
             "version": "==1.0.0"
-        },
-        "setuptools": {
-            "hashes": [
-                "sha256:e5fd0a713141a4a105412233c63dc4e17ba0090c8e8334594ac790ec97792330",
-                "sha256:f106dee1b506dee5102cc3f3e9e68137bbad6d47b616be7991714b0c62204251"
-            ],
-            "markers": "python_version >= '3.7'",
-            "version": "==67.4.0"
         },
         "sqlalchemy": {
             "extras": [
