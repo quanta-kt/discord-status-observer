@@ -4,6 +4,7 @@ import datetime
 import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncEngine
 from io import BytesIO
+from typing import Optional
 
 from .models import StatusLog
 from .imggen import graph
@@ -81,9 +82,13 @@ class StatusLogRepository:
             result = await conn.execute(query)
             return result.fetchall()
 
-    async def get_user_graph(self, user_id: int, guild_id: int) -> BytesIO:
+    async def get_user_graph(self, user_id: int, guild_id: int) -> Optional[BytesIO]:
 
         stats = await self.get_user_stats(user_id=user_id, guild_id=guild_id)
+
+        if not stats:
+            return None
+
         total_time = sum(stat.time.total_seconds() for stat in stats)
 
         values = {

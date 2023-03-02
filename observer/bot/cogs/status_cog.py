@@ -33,6 +33,11 @@ class Status(commands.Cog):
         """
 
         image = await self._repo.get_user_graph(ctx.author.id, ctx.guild.id)
+
+        if image is None:
+            await ctx.send(content="No data to show.")
+            return
+
         await ctx.send(file=discord.File(image, filename="graph.png"))
 
     @commands.Cog.listener()
