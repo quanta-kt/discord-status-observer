@@ -16,12 +16,20 @@ class Status(commands.Cog):
         self.bot = bot
         self.guild_ids = guild_ids
         self._repo = repo
+        self._is_ready = False
 
     @commands.Cog.listener()
     async def on_ready(self):
         for guild_id in self.guild_ids:
             guild = self.bot.get_guild(guild_id) or await self.bot.fetch_guild(guild_id)
             await self._repo.log_initial_statuses(guild.members, guild_id)
+
+        self._is_ready = True
+
+    async def cog_unload(self):
+        for guild_id in self.guild_ids:
+            guild = self.bot.get_guild(guild_id) or await self.bot.fetch_guild(guild_id)
+            await self._repo.log_statuses_before_shutdown(guild.members, guild_id)
 
     @commands.command()
     async def stats(self, ctx: commands.Context):
@@ -42,6 +50,9 @@ class Status(commands.Cog):
 
     @commands.Cog.listener()
     async def on_presence_update(self, before: discord.Member, after: discord.Member):
+        if not self._is_ready:
+            return False
+
         if after.guild.id not in self.guild_ids:
             return
 

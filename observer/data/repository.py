@@ -49,6 +49,26 @@ class StatusLogRepository:
         async with self._engine.begin() as conn:
             await conn.execute(StatusLog.insert(), entires)
 
+    async def log_statuses_before_shutdown(
+        self, members: list[discord.Member], guild_id: int
+    ) -> None:
+
+        now = datetime.datetime.now()
+
+        entires = [
+            {
+                "user_id": member.id,
+                "guild_id": guild_id,
+                "before": member.status.name,
+                "after": None,
+                "time": now,
+            }
+            for member in members
+        ]
+
+        async with self._engine.begin() as conn:
+            await conn.execute(StatusLog.insert(), entires)
+
     async def get_user_stats(self, user_id, guild_id):
 
         subquery = (
