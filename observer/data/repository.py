@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 from io import BytesIO
 
 from .models import StatusLog
-from ..imggen import graph
+from .imggen import graph
 
 
 class StatusLogRepository:
