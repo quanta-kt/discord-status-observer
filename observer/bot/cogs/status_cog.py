@@ -22,14 +22,18 @@ class Status(commands.Cog):
     async def on_ready(self):
         for guild_id in self.guild_ids:
             guild = self.bot.get_guild(guild_id) or await self.bot.fetch_guild(guild_id)
-            await self._repo.log_initial_statuses(guild.members, guild_id)
+            await self._repo.log_initial_statuses(
+                guild.members, guild_id, datetime.datetime.now()
+            )
 
         self._is_ready = True
 
     async def cog_unload(self):
         for guild_id in self.guild_ids:
             guild = self.bot.get_guild(guild_id) or await self.bot.fetch_guild(guild_id)
-            await self._repo.log_statuses_before_shutdown(guild.members, guild_id)
+            await self._repo.log_statuses_before_shutdown(
+                guild.members, guild_id, datetime.datetime.now()
+            )
 
     @commands.command()
     async def stats(self, ctx: commands.Context):

@@ -30,17 +30,18 @@ class StatusLogRepository:
             )
 
     async def log_initial_statuses(
-        self, members: list[discord.Member], guild_id: int
+        self,
+        members: list[discord.Member],
+        guild_id: int,
+        startup_time: datetime.datetime,
     ) -> None:
-        now = datetime.datetime.now()
-
         entires = [
             {
                 "user_id": member.id,
                 "guild_id": guild_id,
                 "before": None,
                 "after": member.status.name,
-                "time": now,
+                "time": startup_time,
             }
             for member in members
         ]
@@ -49,17 +50,18 @@ class StatusLogRepository:
             await conn.execute(StatusLog.insert(), entires)
 
     async def log_statuses_before_shutdown(
-        self, members: list[discord.Member], guild_id: int
+        self,
+        members: list[discord.Member],
+        guild_id: int,
+        shutdown_time: datetime.datetime,
     ) -> None:
-        now = datetime.datetime.now()
-
         entires = [
             {
                 "user_id": member.id,
                 "guild_id": guild_id,
                 "before": member.status.name,
                 "after": None,
-                "time": now,
+                "time": shutdown_time,
             }
             for member in members
         ]
