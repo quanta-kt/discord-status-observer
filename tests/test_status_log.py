@@ -214,6 +214,14 @@ async def test_stats_with_startup_and_shutdown(repository: StatusLogRepository):
     change_time = startup_time + datetime.timedelta(minutes=20)
     await repository.log_status_change(1, 2, Status.online, Status.offline, change_time)
 
+    members = [
+        Member(
+            id=1,
+            guild_id=2,
+            status=Status.offline,
+        ),
+    ]
+
     shutdown_time = change_time + datetime.timedelta(minutes=20)
     await repository.log_statuses_before_shutdown(members, 2, shutdown_time)  # shutdown
 
