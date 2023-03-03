@@ -10,4 +10,6 @@ DATABASE_URI = os.getenv("DATABASE_URI")
 # The database used for running tests
 TEST_DATABASE_URI = os.getenv("TEST_DATABASE_URI")
 
-GUILD_IDS = {int(x) for x in os.getenv("GUILD_IDS").split(";")}
+GUILD_IDS = {
+    int(guild_id) for guild_id in os.getenv("GUILD_IDS", "").split(";") if guild_id
+}
