@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 import datetime
+from typing import Optional
 
 from ...data import repository
 
@@ -36,26 +37,30 @@ class Status(commands.Cog):
             )
 
     @commands.command()
-    async def stats(self, ctx: commands.Context):
+    async def stats(
+        self, ctx: commands.Context, target: Optional[discord.Member] = None
+    ):
         """
         Draws a pie chat of amount of time you have spent with different
         statuses (online, idle, DnD, offline)
 
         don't ask me why.
         """
+        if target is None:
+            target = ctx.author
 
         # Record an early log so that the most up-to date data gets shown by
         # Subsequent `get_user_graph` call.
-        if ctx.author.status is not None:
+        if target.status is not None:
             await self._repo.log_status_change(
-                user_id=ctx.author.id,
+                user_id=target.id,
                 guild_id=ctx.guild.id,
-                before=ctx.author.status.name,
-                after=ctx.author.status.name,
+                before=target.status.name,
+                after=target.status.name,
                 timestamp=datetime.datetime.now(),
             )
 
-        image = await self._repo.get_user_graph(ctx.author.id, ctx.guild.id)
+        image = await self._repo.get_user_graph(target.id, ctx.guild.id)
 
         if image is None:
             await ctx.send(content="No data to show.")
