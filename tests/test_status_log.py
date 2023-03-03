@@ -11,7 +11,6 @@ from observer.data.models import StatusLog, Status, metadata
 @pytest_asyncio.fixture
 @pytest.mark.asyncio
 async def engine():
-
     try:
         engine = create_async_engine(config.TEST_DATABASE_URI)
 
@@ -62,7 +61,6 @@ async def test_insert(repository: StatusLogRepository, engine: AsyncEngine):
 
 @pytest.mark.asyncio
 async def test_stats(repository: StatusLogRepository):
-
     now = datetime.datetime(
         year=2023,
         month=1,

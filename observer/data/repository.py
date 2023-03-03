@@ -32,7 +32,6 @@ class StatusLogRepository:
     async def log_initial_statuses(
         self, members: list[discord.Member], guild_id: int
     ) -> None:
-
         now = datetime.datetime.now()
 
         entires = [
@@ -52,7 +51,6 @@ class StatusLogRepository:
     async def log_statuses_before_shutdown(
         self, members: list[discord.Member], guild_id: int
     ) -> None:
-
         now = datetime.datetime.now()
 
         entires = [
@@ -70,7 +68,6 @@ class StatusLogRepository:
             await conn.execute(StatusLog.insert(), entires)
 
     async def get_user_stats(self, user_id, guild_id):
-
         subquery = (
             sa.select(
                 StatusLog.c.before.label("status"),
@@ -103,7 +100,6 @@ class StatusLogRepository:
             return result.fetchall()
 
     async def get_user_graph(self, user_id: int, guild_id: int) -> Optional[BytesIO]:
-
         stats = await self.get_user_stats(user_id=user_id, guild_id=guild_id)
 
         if not stats:

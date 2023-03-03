@@ -30,7 +30,6 @@ def generate_pie_graph(values: list[tuple[float, Color]]) -> Image:
 
     consumed = 0.0
     for val, color in values:
-
         arc_angle = val * 360
 
         draw.arc(
@@ -52,7 +51,6 @@ def generate_status_pie_graph(
     dnd: float = 0.0,
     offline: float = 0.0,
 ) -> Image:
-
     values = [
         (online, ONLINE_COLOR),
         (idle, IDLE_COLOR),
