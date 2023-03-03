@@ -44,6 +44,17 @@ class Status(commands.Cog):
         don't ask me why.
         """
 
+        # Record an early log so that the most up-to date data gets shown by
+        # Subsequent `get_user_graph` call.
+        if ctx.author.status is not None:
+            await self._repo.log_status_change(
+                user_id=ctx.author.id,
+                guild_id=ctx.guild.id,
+                before=ctx.author.status.name,
+                after=ctx.author.status.name,
+                timestamp=datetime.datetime.now(),
+            )
+
         image = await self._repo.get_user_graph(ctx.author.id, ctx.guild.id)
 
         if image is None:
