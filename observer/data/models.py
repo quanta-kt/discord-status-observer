@@ -33,7 +33,7 @@ StatusLog = sa.Table(
     sa.Column(
         "after",
         sa.Enum(Status),
-        nullable=False,
+        nullable=True,
     ),
     sa.Column(
         "time",
